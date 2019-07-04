@@ -4,12 +4,16 @@ import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Collapse from 'react-bootstrap/Collapse';
 import Card from 'react-bootstrap/Card';
+import { Button } from 'react-bootstrap';
+
+import './Quotetable.css';
 
 export class Quotetable extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            fields: this.props.fields.map(field => <th>{field}</th>),
             quotes: [],
         }
     }
@@ -22,30 +26,35 @@ export class Quotetable extends React.Component {
         fetch('http://localhost:4200')
             .then(res => res.json())
             .then(data => {
-                this.setState({quotes: data});
+                this.setState({
+                    quotes: data.map(quote => ({Status: 'None', ...quote}))
+                });
             });
     }
 
     render = () => {
         
-        let fields = [];
+        const isQuotesEmpty = this.state.quotes.length === 0;
+
         let values = [];
-        if (this.state.quotes.length !== 0) {
-            fields = Object.keys(this.state.quotes[0]).map((label, idx) => <th key={idx}>{label}</th>);
-            // values = this.state.quotes.map(quote => <tr>{Object.values(quote).map(value => <td>{value}</td>)}</tr>);
+        if (!isQuotesEmpty) {
             values = this.state.quotes.map(quote => <QuoteRow values={quote} />);
         } 
 
         return (
-            <div>
+            <div className='container'>
                 <Table striped border hover size="sm">
                     <thead>
-                        <tr>{fields}</tr>
+                        <tr>{this.state.fields}</tr>
                     </thead>
                     <tbody>
-                        {values}
+                        {!isQuotesEmpty && values}
+                        {isQuotesEmpty && 
+                            <div className='no-quotes'>No quotes found!</div>
+                        }
                     </tbody>
                 </Table>
+                <Button className='footer-button'>Predict Goodness</Button>
             </div>
         );
     };
@@ -65,8 +74,8 @@ class QuoteRow extends React.Component {
         const row = Object.values(this.props.values).map(value => <td>{value}</td>);
 
         return (
-            <div>
-                <tr>
+            <React.Fragment>
+                <tr onClick={() => this.setState({collapse: !this.state.collapse})}>
                     {row}
                 </tr>
                 <Collapse in={this.state.collapse}>
@@ -74,7 +83,7 @@ class QuoteRow extends React.Component {
                         <div>Info</div>
                     </Card>
                 </Collapse>
-            </div>
+            </React.Fragment>
         );
     };
 };
