@@ -121,7 +121,7 @@ export class Quotetable extends React.Component {
             <div className='table-container'>
                 <Button className='header-button' onClick={this.handlePredictGoodness}>Predict Goodness</Button>
                 <ListGroup variant='flush' fluid>
-                    <ListGroup.Item bsPrefix='row'>{this.state.fields}</ListGroup.Item>
+                    <ListGroup.Item bsPrefix='row row-header'>{this.state.fields}</ListGroup.Item>
                     {!isQuotesEmpty && this.state.values}
                     {isQuotesEmpty && 
                         <h1>No quotes found!</h1>
@@ -167,13 +167,18 @@ class QuoteRow extends React.Component {
             acceptOrReject = 'accept';
         }
 
+        let bgColorRow = ' oddRow';
+        if (this.props.rowkey % 2 === 0) {
+            bgColorRow = ' evenRow';
+        }
+
         return (
             <React.Fragment>
-                <ListGroup.Item bsPrefix='row row-data' onClick={() => this.setState({collapse: !this.state.collapse && isRowPredicted})}>
+                <ListGroup.Item bsPrefix={'row' + bgColorRow} onClick={() => this.setState({collapse: !this.state.collapse && isRowPredicted})}>
                     {row}
                 </ListGroup.Item>
                 {isRowPredicted && 
-                <ListGroup.Item bsPrefix='row row-data'>
+                <ListGroup.Item bsPrefix='row'>
                     <Collapse in={this.state.collapse}>
                         <Card body>
                             {acceptOrReject === 'accept' && <h2 id='accept'>Accept</h2>}
