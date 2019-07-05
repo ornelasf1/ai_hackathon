@@ -123,9 +123,9 @@ export class Quotetable extends React.Component {
                 <ListGroup variant='flush' fluid>
                     <ListGroup.Item bsPrefix='row row-header'>{this.state.fields}</ListGroup.Item>
                     {!isQuotesEmpty && this.state.values}
-                    {isQuotesEmpty && 
+                    {isQuotesEmpty && <ListGroup.Item>
                         <h1>No quotes found!</h1>
-                    }
+                    </ListGroup.Item>}
                 </ListGroup>
                 {/* <Table striped hover size="sm">
                     <thead>
