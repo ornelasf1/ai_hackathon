@@ -5,6 +5,10 @@ import Table from 'react-bootstrap/Table';
 import Collapse from 'react-bootstrap/Collapse';
 import Card from 'react-bootstrap/Card';
 import { Button } from 'react-bootstrap';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 import './Quotetable.css';
 import {ReactComponent as ProblemIcon} from '../images/problem.svg';
@@ -15,7 +19,7 @@ export class Quotetable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            fields: this.props.fields.map((field, i) => <th key={i}>{field}</th>),
+            fields: this.props.fields.map((field, i) => <div key={i}>{field}</div>),
             values: [],
             quotes: [],
             predictedQuotes: [],
@@ -95,7 +99,7 @@ export class Quotetable extends React.Component {
                     });
                 }
                 console.log('Returning prediction: ', predQuote);
-                return <QuoteRow key={i} quote={quote} prediction={predQuote}/>
+                return <QuoteRow key={i} rowkey={i} quote={quote} prediction={predQuote}/>
             });
         }
 
@@ -114,20 +118,26 @@ export class Quotetable extends React.Component {
         const isQuotesEmpty = this.state.quotes.length === 0;
 
         return (
-            //Todo: possible redesign using Container Col Row
-            <div className='container'>
+            <div className='table-container'>
                 <Button className='header-button' onClick={this.handlePredictGoodness}>Predict Goodness</Button>
-                <Table striped hover size="sm">
+                <ListGroup variant='flush' fluid>
+                    <ListGroup.Item bsPrefix='row'>{this.state.fields}</ListGroup.Item>
+                    {!isQuotesEmpty && this.state.values}
+                    {isQuotesEmpty && 
+                        <h1>No quotes found!</h1>
+                    }
+                </ListGroup>
+                {/* <Table striped hover size="sm">
                     <thead>
                         <tr>{this.state.fields}</tr>
                     </thead>
                     <tbody>
                         {!isQuotesEmpty && this.state.values}
-                        {/* {isQuotesEmpty && 
+                        {isQuotesEmpty && 
                             <h1>No quotes found!</h1>
-                        } */}
+                        }
                     </tbody>
-                </Table>
+                </Table> */}
             </div>
         );
     };
@@ -147,26 +157,30 @@ class QuoteRow extends React.Component {
         const isRowPredicted = Object.keys(this.props.prediction).length !== 0;
 
         let acceptOrReject = '';
-        let row = Object.values(this.props.quote).map((value, i) => <td key={i}>{value}</td>);
+        let row = Object.values(this.props.quote).map((value, i) => <div key={i}>{value}</div>);
+        
         if (parseFloat(this.props.prediction['Scored Labels']) < this.props.quote['Metric']) {
-            row[0] = (<td key={0}><ProblemIcon id='problem-icon'/></td>);
+            row[0] = (<div key={0}><ProblemIcon id='problem-icon'/></div>);
             acceptOrReject = 'reject';
         } else if (parseFloat(this.props.prediction['Scored Labels']) >= this.props.quote['Metric']){
-            row[0] = (<td key={0}><ApprovedIcon id='approved-icon'/></td>);
+            row[0] = (<div key={0}><ApprovedIcon id='approved-icon'/></div>);
             acceptOrReject = 'accept';
         }
 
         return (
             <React.Fragment>
-                <tr onClick={() => this.setState({collapse: !this.state.collapse && isRowPredicted})}>
+                <ListGroup.Item bsPrefix='row row-data' onClick={() => this.setState({collapse: !this.state.collapse && isRowPredicted})}>
                     {row}
-                </tr>
-                {isRowPredicted && <Collapse in={this.state.collapse}>
-                    <Card body>
-                        {acceptOrReject === 'accept' && <h2 id='accept'>Accept</h2>}
-                        {acceptOrReject === 'reject' && <h2 id='reject'>Reject</h2>}
-                    </Card>
-                </Collapse>}
+                </ListGroup.Item>
+                {isRowPredicted && 
+                <ListGroup.Item bsPrefix='row row-data'>
+                    <Collapse in={this.state.collapse}>
+                        <Card body>
+                            {acceptOrReject === 'accept' && <h2 id='accept'>Accept</h2>}
+                            {acceptOrReject === 'reject' && <h2 id='reject'>Reject</h2>}
+                        </Card>
+                    </Collapse>
+                </ListGroup.Item>}
             </React.Fragment>
         );
     };

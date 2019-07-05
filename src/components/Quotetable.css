@@ -1,3 +1,26 @@
+
+.table-container{
+    margin: 60px;
+}
+
+.row {
+    display: flex;
+
+}
+
+.row > div {
+    flex: 1;
+}
+
+/* .row-data:nth-child(even) {
+    background-color: rgb(185, 184, 184);
+}
+
+.row-data:nth-child(odd) {
+    background-color: rgb(207, 207, 207);
+} */
+
+
 .header-button {
     margin-bottom: 20px;
 }
