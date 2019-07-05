@@ -1,7 +1,21 @@
-.footer-button {
-    margin-bottom: 50px;
+.header-button {
+    margin-bottom: 20px;
 }
 
-.no-quotes {
-    
+#problem-icon {
+    width: 26px;
+    height: 26px;
+}
+
+#approved-icon {
+    width: 26px;
+    height: 26px;
+}
+
+#accept {
+    color: greenyellow;
+}
+
+#reject {
+    color: crimson;
 }

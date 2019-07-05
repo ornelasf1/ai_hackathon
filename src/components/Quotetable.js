@@ -7,54 +7,127 @@ import Card from 'react-bootstrap/Card';
 import { Button } from 'react-bootstrap';
 
 import './Quotetable.css';
+import {ReactComponent as ProblemIcon} from '../images/problem.svg';
+import {ReactComponent as ApprovedIcon} from '../images/verified.svg';
 
 export class Quotetable extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            fields: this.props.fields.map(field => <th>{field}</th>),
+            fields: this.props.fields.map((field, i) => <th key={i}>{field}</th>),
+            values: [],
             quotes: [],
+            predictedQuotes: [],
+            isPredicting: false,
         }
     }
 
     componentDidMount = () => {
-        this.getQuotes();
+        this.getQuotes().then(() => {
+            this.generateResultQuotes(this.state.quotes, this.state.predictedQuotes);
+        });
     }
 
     getQuotes = () => {
-        fetch('http://localhost:4200')
+        return fetch('http://localhost:4200/mock')
             .then(res => res.json())
             .then(data => {
                 this.setState({
-                    quotes: data.map(quote => ({Status: 'None', ...quote}))
+                    quotes: data.map(quote => ({Status: '', ...quote}))
                 });
-            });
+            }, onrejected => console.log(onrejected));
     }
+
+    getPredictedQuotes = input => {
+        const proxy = 'https://crossorigin.me/';
+        const url = 'https://ussouthcentral.services.azureml.net/workspaces/4288e7c76c3a48ee8202a1b963906f68/services/4ec835e46fcd46a5bfe4d389e3d918ee/execute?api-version=2.0&format=swagger';
+        const api_key = 'TaJrYL+dmIyheDoSNkHE0hozyI6spM/Jn+t7dOf0Hb1j9J28JLj/0+QBfD/AeMD5X8UACXVj2qEnk7LqEiixPw==';
+        const data = JSON.stringify({
+            Inputs: {
+                input1: [...input]
+            },
+            GlobalParameters: {}
+        });
+        // fetch(proxy + url, {
+        //     method: 'POST',
+        //     body: data,
+        //     headers: {
+        //         'Authorization': 'Bearer ' + api_key,
+        //         'Content-Length': data.length,
+        //         'Content-Type': 'application/json',
+        //     }
+        // })
+        // .then(res => res.json())
+        // .then(data => console.log(data), onrejected => console.log(onrejected));
+        // this.setState({predictedQuotes: data})
+        return fetch('http://localhost:4200/mock-predictions')
+            .then(res => res.json())
+            .then(data => {
+                this.setState({
+                    predictedQuotes: data.Results.output1,
+                });
+            }, onrejected => console.log(onrejected));
+    }
+
+    doQuotesMatch = (quote, predictedQuote) => {
+        let features = Object.keys(predictedQuote).filter(feature => feature !== 'Scored Labels');
+        for (let feature of features) {
+            if (`${quote[feature]}` !== `${predictedQuote[feature]}`) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    generateResultQuotes = (quotes, predictedQuotes) => {
+
+        let newQuotes = [];
+
+        if (quotes.length !== 0) {
+            newQuotes = quotes.map((quote, i) => {
+                let predQuote = {};
+                if (predictedQuotes.length !== 0) {
+                    predQuote = predictedQuotes.find(predQuote => {
+                        if (this.doQuotesMatch(quote, predQuote)) {
+                            return predQuote;
+                        }
+                    });
+                }
+                console.log('Returning prediction: ', predQuote);
+                return <QuoteRow key={i} quote={quote} prediction={predQuote}/>
+            });
+        }
+
+        this.setState({values: newQuotes});
+    }
+
+    handlePredictGoodness = () => {
+        this.setState({isPredicting: true});
+        this.getPredictedQuotes(this.state.quotes)
+            .then(() => this.generateResultQuotes(this.state.quotes, this.state.predictedQuotes));
+
+    };
 
     render = () => {
         
         const isQuotesEmpty = this.state.quotes.length === 0;
 
-        let values = [];
-        if (!isQuotesEmpty) {
-            values = this.state.quotes.map(quote => <QuoteRow values={quote} />);
-        } 
-
         return (
+            //Todo: possible redesign using Container Col Row
             <div className='container'>
-                <Table striped border hover size="sm">
+                <Button className='header-button' onClick={this.handlePredictGoodness}>Predict Goodness</Button>
+                <Table striped hover size="sm">
                     <thead>
                         <tr>{this.state.fields}</tr>
                     </thead>
                     <tbody>
-                        {!isQuotesEmpty && values}
-                        {isQuotesEmpty && 
-                            <div className='no-quotes'>No quotes found!</div>
-                        }
+                        {!isQuotesEmpty && this.state.values}
+                        {/* {isQuotesEmpty && 
+                            <h1>No quotes found!</h1>
+                        } */}
                     </tbody>
                 </Table>
-                <Button className='footer-button'>Predict Goodness</Button>
             </div>
         );
     };
@@ -71,18 +144,29 @@ class QuoteRow extends React.Component {
 
     render = () => {
 
-        const row = Object.values(this.props.values).map(value => <td>{value}</td>);
+        const isRowPredicted = Object.keys(this.props.prediction).length !== 0;
+
+        let acceptOrReject = '';
+        let row = Object.values(this.props.quote).map((value, i) => <td key={i}>{value}</td>);
+        if (parseFloat(this.props.prediction['Scored Labels']) < this.props.quote['Metric']) {
+            row[0] = (<td key={0}><ProblemIcon id='problem-icon'/></td>);
+            acceptOrReject = 'reject';
+        } else if (parseFloat(this.props.prediction['Scored Labels']) >= this.props.quote['Metric']){
+            row[0] = (<td key={0}><ApprovedIcon id='approved-icon'/></td>);
+            acceptOrReject = 'accept';
+        }
 
         return (
             <React.Fragment>
-                <tr onClick={() => this.setState({collapse: !this.state.collapse})}>
+                <tr onClick={() => this.setState({collapse: !this.state.collapse && isRowPredicted})}>
                     {row}
                 </tr>
-                <Collapse in={this.state.collapse}>
-                    <Card>
-                        <div>Info</div>
+                {isRowPredicted && <Collapse in={this.state.collapse}>
+                    <Card body>
+                        {acceptOrReject === 'accept' && <h2 id='accept'>Accept</h2>}
+                        {acceptOrReject === 'reject' && <h2 id='reject'>Reject</h2>}
                     </Card>
-                </Collapse>
+                </Collapse>}
             </React.Fragment>
         );
     };

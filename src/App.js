@@ -21,18 +21,8 @@ const schema = [
   'Total Cost',
   'Metric'
 ];
-// let quotes = [];
-// getQuotes = () => {
-//   fetch('http://localhost:4200')
-//       .then(res => res.json())
-//       .then(data => {
-//           quotes = data.map(quote => ({Status: 'None', ...quote}));
-//       });
-// }
 
 function App() {
-  // getQuotes();
-
   return (
     <div>
       <link

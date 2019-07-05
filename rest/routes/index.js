@@ -14,8 +14,12 @@ const getObjectFromFile = fileName => {
 };
 
 /* GET home page. */
-router.get('/', (req, res) => {
+router.get('/mock', (req, res) => {
   res.json(getObjectFromFile('../data/demo-data.json'));
+});
+
+router.get('/mock-predictions', (req, res) => {
+  res.json(getObjectFromFile('../data/demo-data-pred.json'));
 });
 
 module.exports = router;

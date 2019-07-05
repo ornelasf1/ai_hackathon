@@ -1,0 +1,150 @@
+{
+    "Results": {
+        "output1": [
+            {
+                "Region": "Asia",
+                "Country": "Singapore",
+                "Item Type": "Household",
+                "Lead Time (DAYS)": "41",
+                "Total Cost": "1275934.95",
+                "Metric": "1.009546786",
+                "Scored Labels": "0.849465498607124"
+            },
+            {
+                "Region": "Europe",
+                "Country": "United Kingdom",
+                "Item Type": "Vegetables",
+                "Lead Time (DAYS)": "5",
+                "Total Cost": "835653.46",
+                "Metric": "0.641200396",
+                "Scored Labels": "0.613317857709077"
+            },
+            {
+                "Region": "Europe",
+                "Country": "Armenia",
+                "Item Type": "Meat",
+                "Lead Time (DAYS)": "27",
+                "Total Cost": "1530196.76",
+                "Metric": "0.90029367",
+                "Scored Labels": "0.908475789679902"
+            },
+            {
+                "Region": "Australia and Oceania",
+                "Country": "Marshall Islands",
+                "Item Type": "Office Supplies",
+                "Lead Time (DAYS)": "36",
+                "Total Cost": "2311200.32",
+                "Metric": "1.07297044",
+                "Scored Labels": "1.00400354375961"
+            },
+            {
+                "Region": "Australia and Oceania",
+                "Country": "East Timor",
+                "Item Type": "Clothes",
+                "Lead Time (DAYS)": "25",
+                "Total Cost": "441128.56",
+                "Metric": "0.900718503",
+                "Scored Labels": "0.974919825307181"
+            },
+            {
+                "Region": "Asia",
+                "Country": "Laos",
+                "Item Type": "Meat",
+                "Lead Time (DAYS)": "27",
+                "Total Cost": "419370.98",
+                "Metric": "0.638743321",
+                "Scored Labels": "0.653793379000763"
+            },
+            {
+                "Region": "Asia",
+                "Country": "Maldives",
+                "Item Type": "Office Supplies",
+                "Lead Time (DAYS)": "36",
+                "Total Cost": "1643536.59",
+                "Metric": "0.971003701",
+                "Scored Labels": "0.851506258087904"
+            },
+            {
+                "Region": "Asia",
+                "Country": "Malaysia",
+                "Item Type": "Cosmetics",
+                "Lead Time (DAYS)": "36",
+                "Total Cost": "1548851",
+                "Metric": "1.072400032",
+                "Scored Labels": "1.07900616864266"
+            },
+            {
+                "Region": "Asia",
+                "Country": "Kazakhstan",
+                "Item Type": "Office Supplies",
+                "Lead Time (DAYS)": "22",
+                "Total Cost": "664387.84",
+                "Metric": "0.54146644",
+                "Scored Labels": "0.353093892129601"
+            },
+            {
+                "Region": "Europe",
+                "Country": "Italy",
+                "Item Type": "Clothes",
+                "Lead Time (DAYS)": "32",
+                "Total Cost": "1012335.8",
+                "Metric": "1.559599689",
+                "Scored Labels": "1.24364880427997"
+            },
+            {
+                "Region": "Europe",
+                "Country": "Hungary",
+                "Item Type": "Meat",
+                "Lead Time (DAYS)": "11",
+                "Total Cost": "1706035.85",
+                "Metric": "0.621696",
+                "Scored Labels": "0.630096681109144"
+            },
+            {
+                "Region": "Sub-Saharan Africa",
+                "Country": "Burkina Faso",
+                "Item Type": "Cosmetics",
+                "Lead Time (DAYS)": "47",
+                "Total Cost": "3810405.2",
+                "Metric": "1.806956805",
+                "Scored Labels": "1.80031052908008"
+            },
+            {
+                "Region": "Sub-Saharan Africa",
+                "Country": "Seychelles",
+                "Item Type": "Beverages",
+                "Lead Time (DAYS)": "40",
+                "Total Cost": "398734.65",
+                "Metric": "1.632250722",
+                "Scored Labels": "1.3361534682292"
+            },
+            {
+                "Region": "Sub-Saharan Africa",
+                "Country": "South Sudan",
+                "Item Type": "Fruits",
+                "Lead Time (DAYS)": "27",
+                "Total Cost": "48597.96",
+                "Metric": "1.058035646",
+                "Scored Labels": "1.0471827632496"
+            },
+            {
+                "Region": "Central America and the Caribbean",
+                "Country": "Barbados",
+                "Item Type": "Baby Food",
+                "Lead Time (DAYS)": "10",
+                "Total Cost": "870593.12",
+                "Metric": "0.539023493",
+                "Scored Labels": "0.60849602469271"
+            },
+            {
+                "Region": "Middle East and North Africa",
+                "Country": "Azerbaijan",
+                "Item Type": "Meat",
+                "Lead Time (DAYS)": "29",
+                "Total Cost": "1828525.73",
+                "Metric": "1.01053695",
+                "Scored Labels": "1.01520815556612"
+            }
+        ]
+    }
+}
