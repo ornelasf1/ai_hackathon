@@ -26,8 +26,19 @@
 }
 
 
-.header-button {
+.button-header {
     margin-bottom: 20px;
+    display: flex;
+}
+
+#eval-quotes{
+    justify-content: flex-start;
+    margin-right: auto;
+}
+
+#get-quotes{
+    justify-content: flex-end;
+    margin-left: auto;
 }
 
 #problem-icon {

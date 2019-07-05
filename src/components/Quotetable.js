@@ -16,24 +16,25 @@ export class Quotetable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            fields: this.props.fields.map((field, i) => <div key={i}>{field}</div>),
-            values: [],
+            fieldRow: this.props.fields.map((field, i) => <div key={i}>{field}</div>),
+            quoteRows: [],
             quotes: [],
             predictedQuotes: [],
+            errorEvaluating: false,
             isPredicting: false,
         }
     }
 
     componentDidMount = () => {
-        this.getQuotes().then(() => {
-            this.generateResultQuotes(this.state.quotes, this.state.predictedQuotes);
-        });
+        // this.getQuotes().then(() => {
+        //     this.generateResultQuotes(this.state.quotes, this.state.predictedQuotes);
+        // });
     }
 
     getQuotes = () => {
         return fetch('http://localhost:4200/mock')
-            .then(res => res.json())
-            .then(data => {
+        .then(res => res.json())
+        .then(data => {
                 this.setState({
                     quotes: data.map(quote => ({Status: '', ...quote}))
                 });
@@ -41,15 +42,15 @@ export class Quotetable extends React.Component {
     }
 
     getPredictedQuotes = input => {
-        let deleted_status_quotes = [...input];
+        let deleted_status_quotes = input.map(quote => Object.assign({}, quote));
         deleted_status_quotes.forEach(quote => delete quote.Status);
-        console.log('send: ', input);
+        
         const proxy = 'https://cors-anywhere.herokuapp.com/';
         const url = 'https://ussouthcentral.services.azureml.net/workspaces/4288e7c76c3a48ee8202a1b963906f68/services/4ec835e46fcd46a5bfe4d389e3d918ee/execute?api-version=2.0&format=swagger';
         const api_key = 'TaJrYL+dmIyheDoSNkHE0hozyI6spM/Jn+t7dOf0Hb1j9J28JLj/0+QBfD/AeMD5X8UACXVj2qEnk7LqEiixPw==';
         const data = JSON.stringify({
             Inputs: {
-                input1: [...input]
+                input1: [...deleted_status_quotes]
             },
             GlobalParameters: {}
         });
@@ -65,9 +66,14 @@ export class Quotetable extends React.Component {
         })
         .then(res => res.json())
         .then(data => {
-            this.setState({
-                predictedQuotes: data.Results.output1,
-            });
+            try {
+                this.setState({
+                    predictedQuotes: data.Results.output1,
+                });
+            } catch(e) {
+                console.log('Data failed to be recognized: ', e);
+                this.setState({errorEvaluating: true});
+            }
         }, onrejected => console.log(onrejected));
 
         // this.setState({predictedQuotes: data})
@@ -109,7 +115,7 @@ export class Quotetable extends React.Component {
             });
         }
 
-        this.setState({values: newQuotes});
+        this.setState({quoteRows: newQuotes});
     }
 
     handlePredictGoodness = () => {
@@ -119,31 +125,32 @@ export class Quotetable extends React.Component {
 
     };
 
+    handleGetQuotesFromVendors = () => {
+        this.getQuotes().then(() => {
+            this.generateResultQuotes(this.state.quotes, this.state.predictedQuotes);
+        });
+    }
+
     render = () => {
+
+        const {fieldRow, quoteRows, quotes, errorEvaluating} = this.state;
         
-        const isQuotesEmpty = this.state.quotes.length === 0;
+        const isQuotesEmpty = quotes.length === 0;
 
         return (
             <div className='table-container'>
-                <Button className='header-button' onClick={this.handlePredictGoodness}>Predict Goodness</Button>
-                <ListGroup variant='flush' fluid={'true'}>
-                    <ListGroup.Item bsPrefix='row row-header'>{this.state.fields}</ListGroup.Item>
-                    {!isQuotesEmpty && this.state.values}
-                    {isQuotesEmpty && <ListGroup.Item>
+                <div className='button-header'>
+                    <Button id='eval-quotes' onClick={this.handlePredictGoodness}>Evaluate Quotes</Button>
+                    <Button id='get-quotes' onClick={this.handleGetQuotesFromVendors}>Get Quotes from Vendors</Button>
+                </div>
+                <ListGroup variant='flush' fluid='true'>
+                    <ListGroup.Item bsPrefix='row row-header'>{fieldRow}</ListGroup.Item>
+                    {!isQuotesEmpty && quoteRows}
+                    {isQuotesEmpty && 
+                    <ListGroup.Item>
                         <h1>No quotes found!</h1>
                     </ListGroup.Item>}
                 </ListGroup>
-                {/* <Table striped hover size="sm">
-                    <thead>
-                        <tr>{this.state.fields}</tr>
-                    </thead>
-                    <tbody>
-                        {!isQuotesEmpty && this.state.values}
-                        {isQuotesEmpty && 
-                            <h1>No quotes found!</h1>
-                        }
-                    </tbody>
-                </Table> */}
             </div>
         );
     };
@@ -154,6 +161,7 @@ class QuoteRow extends React.Component {
     constructor(props){
         super(props);
         this.state = {
+            quoteEvaluated: Object.keys(this.props.prediction).length !== 0,
             collapse: false,
         }
     }

@@ -1,9 +1,14 @@
 .field-name {
     font-weight: 500;
+    margin: 10px;
 }
 
-.quote {
-    background-color: beige;
+.field-inputs {
+    justify-content: end;
+}
+
+.newquote {
+    background-color: aliceblue;
     border-radius: 20px;
     margin: 40px;
     padding: 10px;
