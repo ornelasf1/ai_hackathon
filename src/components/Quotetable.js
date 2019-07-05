@@ -1,7 +1,6 @@
 
 import React from 'react';
 
-import Table from 'react-bootstrap/Table';
 import Collapse from 'react-bootstrap/Collapse';
 import Card from 'react-bootstrap/Card';
 import { Button } from 'react-bootstrap';
@@ -42,6 +41,9 @@ export class Quotetable extends React.Component {
     }
 
     getPredictedQuotes = input => {
+        let deleted_status_quotes = [...input];
+        deleted_status_quotes.forEach(quote => delete quote.Status);
+        console.log('send: ', input);
         const proxy = 'https://cors-anywhere.herokuapp.com/';
         const url = 'https://ussouthcentral.services.azureml.net/workspaces/4288e7c76c3a48ee8202a1b963906f68/services/4ec835e46fcd46a5bfe4d389e3d918ee/execute?api-version=2.0&format=swagger';
         const api_key = 'TaJrYL+dmIyheDoSNkHE0hozyI6spM/Jn+t7dOf0Hb1j9J28JLj/0+QBfD/AeMD5X8UACXVj2qEnk7LqEiixPw==';
@@ -62,14 +64,19 @@ export class Quotetable extends React.Component {
             }
         })
         .then(res => res.json())
-        .then(data => console.log(data), onrejected => console.log(onrejected));
+        .then(data => {
+            this.setState({
+                predictedQuotes: data.Results.output1,
+            });
+        }, onrejected => console.log(onrejected));
+
         // this.setState({predictedQuotes: data})
         // return fetch('http://localhost:4200/mock-predictions')
         //     .then(res => res.json())
         //     .then(data => {
-        //         this.setState({
-        //             predictedQuotes: data.Results.output1,
-        //         });
+                // this.setState({
+                //     predictedQuotes: data.Results.output1,
+                // });
         //     }, onrejected => console.log(onrejected));
     }
 
@@ -119,7 +126,7 @@ export class Quotetable extends React.Component {
         return (
             <div className='table-container'>
                 <Button className='header-button' onClick={this.handlePredictGoodness}>Predict Goodness</Button>
-                <ListGroup variant='flush' fluid>
+                <ListGroup variant='flush' fluid={'true'}>
                     <ListGroup.Item bsPrefix='row row-header'>{this.state.fields}</ListGroup.Item>
                     {!isQuotesEmpty && this.state.values}
                     {isQuotesEmpty && <ListGroup.Item>
