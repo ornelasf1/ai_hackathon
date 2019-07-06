@@ -3,7 +3,7 @@ import React from 'react';
 
 import Collapse from 'react-bootstrap/Collapse';
 import Card from 'react-bootstrap/Card';
-import { Button } from 'react-bootstrap';
+import { Button, CardGroup } from 'react-bootstrap';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Spinner from 'react-bootstrap/Spinner';
 
@@ -47,48 +47,48 @@ export class Quotetable extends React.Component {
     }
 
     getPredictedQuotes = input => {
-        let deleted_status_quotes = input.map(quote => Object.assign({}, quote));
-        deleted_status_quotes.forEach(quote => delete quote.Status);
-        console.log(deleted_status_quotes);
+        // let deleted_status_quotes = input.map(quote => Object.assign({}, quote));
+        // deleted_status_quotes.forEach(quote => delete quote.Status);
+        // console.log(deleted_status_quotes);
         
-        const proxy = 'https://cors-anywhere.herokuapp.com/';
-        const url = 'https://ussouthcentral.services.azureml.net/workspaces/4288e7c76c3a48ee8202a1b963906f68/services/4ec835e46fcd46a5bfe4d389e3d918ee/execute?api-version=2.0&format=swagger';
-        const api_key = 'TaJrYL+dmIyheDoSNkHE0hozyI6spM/Jn+t7dOf0Hb1j9J28JLj/0+QBfD/AeMD5X8UACXVj2qEnk7LqEiixPw==';
-        const data = JSON.stringify({
-            Inputs: {
-                input1: [...deleted_status_quotes]
-            },
-            GlobalParameters: {}
-        });
-        this.generateResultQuotes(true);
-        return fetch(proxy + url, {
-            method: 'POST',
-            body: data,
-            headers: {
-                'Authorization': 'Bearer ' + api_key,
-                'Content-Length': data.length,
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            try {
-                this.setState({
-                    predictedQuotes: data.Results.output1,
-                });
-            } catch(e) {
-                console.log('Data failed to be recognized: ', e);
-                this.setState({errorEvaluating: true});
-            }
-        }, onrejected => console.log(onrejected));
-
-        // return fetch('http://localhost:4200/mock-predictions')
-        //     .then(res => res.json())
-        //     .then(data => {
+        // const proxy = 'https://cors-anywhere.herokuapp.com/';
+        // const url = 'https://ussouthcentral.services.azureml.net/workspaces/4288e7c76c3a48ee8202a1b963906f68/services/4ec835e46fcd46a5bfe4d389e3d918ee/execute?api-version=2.0&format=swagger';
+        // const api_key = 'TaJrYL+dmIyheDoSNkHE0hozyI6spM/Jn+t7dOf0Hb1j9J28JLj/0+QBfD/AeMD5X8UACXVj2qEnk7LqEiixPw==';
+        // const data = JSON.stringify({
+        //     Inputs: {
+        //         input1: [...deleted_status_quotes]
+        //     },
+        //     GlobalParameters: {}
+        // });
+        // this.generateResultQuotes(true);
+        // return fetch(proxy + url, {
+        //     method: 'POST',
+        //     body: data,
+        //     headers: {
+        //         'Authorization': 'Bearer ' + api_key,
+        //         'Content-Length': data.length,
+        //         'Content-Type': 'application/json',
+        //     }
+        // })
+        // .then(res => res.json())
+        // .then(data => {
+        //     try {
         //         this.setState({
         //             predictedQuotes: data.Results.output1,
         //         });
-        //     }, onrejected => console.log(onrejected));
+        //     } catch(e) {
+        //         console.log('Data failed to be recognized: ', e);
+        //         this.setState({errorEvaluating: true});
+        //     }
+        // }, onrejected => console.log(onrejected));
+
+        return fetch('http://localhost:4200/mock-predictions')
+            .then(res => res.json())
+            .then(data => {
+                this.setState({
+                    predictedQuotes: data.Results.output1,
+                });
+            }, onrejected => console.log(onrejected));
     }
 
     doQuotesMatch = (quote, predictedQuote) => {
@@ -232,6 +232,13 @@ class QuoteRow extends React.Component {
             bgColorRow = ' evenRow';
         }
 
+        let cardBgColor = '';
+        if (acceptOrReject === 'accept') {
+            cardBgColor = 'success';
+        } else if (acceptOrReject === 'reject') {
+            cardBgColor = 'reject';
+        }
+
         return (
             <React.Fragment>
                 <ListGroup.Item bsPrefix={'row' + bgColorRow} onClick={() => this.setState({collapse: !this.state.collapse && isRowPredicted})}>
@@ -241,8 +248,28 @@ class QuoteRow extends React.Component {
                 <ListGroup.Item bsPrefix='row'>
                     <Collapse in={this.state.collapse}>
                         <Card body>
-                            {acceptOrReject === 'accept' && <h2 id='accept'>Accept</h2>}
-                            {acceptOrReject === 'reject' && <h2 id='reject'>Reject</h2>}
+                            <div className='cardEvaluation'>
+                                <div id="status">
+                                    {acceptOrReject === 'accept' && <h2 id='accept'>Accept</h2>}
+                                    {acceptOrReject === 'reject' && <h2 id='reject'>Reject</h2>}
+                                </div>
+                                <div id="statistics">
+                                    <CardGroup>
+                                        <Card>
+                                            <Card.Title>Prediction Score</Card.Title>
+                                            <Card.Body>{prediction['Scored Labels']}</Card.Body>
+                                        </Card>
+                                        <Card>
+                                            <Card.Title>Prediction Standard Deviation</Card.Title>
+                                            <Card.Body>{itemStats['Standard Deviation of Metric']}</Card.Body>
+                                        </Card>
+                                        <Card>
+                                            <Card.Title>Quote Metric</Card.Title>
+                                            <Card.Body>{quote['Metric']}</Card.Body>
+                                        </Card>
+                                    </CardGroup>
+                                </div>
+                            </div>
                         </Card>
                     </Collapse>
                 </ListGroup.Item>}

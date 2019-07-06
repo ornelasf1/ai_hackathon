@@ -58,3 +58,17 @@
 #reject {
     color: crimson;
 }
+
+.cardEvaluation{
+    display: flex;
+}
+
+.cardEvaluation #status {
+    width: 30%;
+    background-color: gray;
+}
+
+.cardEvaluation #statistics {
+    flex: 1;
+    background-color: gainsboro;
+}
