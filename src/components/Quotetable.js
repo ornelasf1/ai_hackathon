@@ -25,10 +25,8 @@ export class Quotetable extends React.Component {
         }
     }
 
-    componentDidMount = () => {
-        // this.getQuotes().then(() => {
-        //     this.generateResultQuotes(this.state.quotes, this.state.predictedQuotes);
-        // });
+    componentWillReceiveProps = nextProps => {
+        this.updateQuotes(nextProps.newQuote);
     }
 
     getQuotes = () => {
@@ -36,7 +34,7 @@ export class Quotetable extends React.Component {
         .then(res => res.json())
         .then(data => {
                 this.setState({
-                    quotes: data.map(quote => ({Status: '', ...quote}))
+                    quotes: [...this.state.quotes, ...data.map(quote => ({Status: '', ...quote}))]
                 });
             }, onrejected => console.log(onrejected));
     }
@@ -44,6 +42,7 @@ export class Quotetable extends React.Component {
     getPredictedQuotes = input => {
         let deleted_status_quotes = input.map(quote => Object.assign({}, quote));
         deleted_status_quotes.forEach(quote => delete quote.Status);
+        console.log(deleted_status_quotes);
         
         const proxy = 'https://cors-anywhere.herokuapp.com/';
         const url = 'https://ussouthcentral.services.azureml.net/workspaces/4288e7c76c3a48ee8202a1b963906f68/services/4ec835e46fcd46a5bfe4d389e3d918ee/execute?api-version=2.0&format=swagger';
@@ -93,7 +92,7 @@ export class Quotetable extends React.Component {
                 return false;
             }
         }
-        return true;
+        return Object.keys(predictedQuote).length !== 0;
     }
 
     generateResultQuotes = (quotes, predictedQuotes, isFetchingPred = false) => {
@@ -104,11 +103,12 @@ export class Quotetable extends React.Component {
             newQuotes = quotes.map((quote, i) => {
                 let predQuote = {};
                 if (predictedQuotes.length !== 0) {
-                    predQuote = predictedQuotes.find(predQuote => {
-                        if (this.doQuotesMatch(quote, predQuote)) {
-                            return predQuote;
+                    for (let newPredQuote of predictedQuotes) {
+                        if (this.doQuotesMatch(quote, newPredQuote)) {
+                            predQuote = newPredQuote;
+                            break;
                         }
-                    });
+                    }
                 }
                 console.log('Returning prediction: ', predQuote);
                 return <QuoteRow key={i} rowkey={i} quote={quote} prediction={predQuote} isFetchingPred={isFetchingPred}/>
@@ -116,6 +116,13 @@ export class Quotetable extends React.Component {
         }
 
         this.setState({quoteRows: newQuotes});
+    }
+
+    updateQuotes = newQuote => {
+        this.setState({quotes: [newQuote, ...this.state.quotes]}, () => {
+            this.generateResultQuotes(this.state.quotes, this.state.predictedQuotes);
+        });
+
     }
 
     handlePredictGoodness = () => {
@@ -132,7 +139,6 @@ export class Quotetable extends React.Component {
     }
 
     render = () => {
-
         const {fieldRow, quoteRows, quotes, errorEvaluating} = this.state;
         
         const isQuotesEmpty = quotes.length === 0;
@@ -144,11 +150,11 @@ export class Quotetable extends React.Component {
                     <Button id='get-quotes' onClick={this.handleGetQuotesFromVendors}>Get Quotes from Vendors</Button>
                 </div>
                 <ListGroup variant='flush' fluid='true'>
-                    <ListGroup.Item bsPrefix='row row-header'>{fieldRow}</ListGroup.Item>
+                    <ListGroup.Item bsPrefix='row rowheader'>{fieldRow}</ListGroup.Item>
                     {!isQuotesEmpty && quoteRows}
                     {isQuotesEmpty && 
                     <ListGroup.Item>
-                        <h1>No quotes found!</h1>
+                        <h1 style={{textAlign: "center"}}>No quotes found!</h1>
                     </ListGroup.Item>}
                 </ListGroup>
             </div>
