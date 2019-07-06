@@ -22,4 +22,8 @@ router.get('/mock-predictions', (req, res) => {
   res.json(getObjectFromFile('../data/demo-data-pred.json'));
 });
 
+router.get('/mock-predictions-stats', (req, res) => {
+  res.json(getObjectFromFile('../data/demo-data-pred-stds.json'));
+});
+
 module.exports = router;

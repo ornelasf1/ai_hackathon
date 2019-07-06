@@ -1,0 +1,86 @@
+[
+    {
+      "Item": "Baby Food",
+      "Standard Deviation of Metric": 0.411880316,
+      "Mean of Metric": 1.000005528,
+      "Average Total Cost": 1283567.873,
+      "Average Lead Time": 25.01368253
+    },
+    {
+      "Item": "Beverages",
+      "Standard Deviation of Metric": 0.410528823,
+      "Mean of Metric": 1.001601316,
+      "Average Total Cost": 239549.9395,
+      "Average Lead Time": 25.08028084
+    },
+    {
+      "Item": "Cereal",
+      "Standard Deviation of Metric": 0.41330115,
+      "Mean of Metric": 0.99967302,
+      "Average Total Cost": 1033188.321,
+      "Average Lead Time": 24.9836432
+    },
+    {
+      "Item": "Clothes",
+      "Standard Deviation of Metric": 0.412793306,
+      "Mean of Metric": 0.999190561,
+      "Average Total Cost": 550418.1486,
+      "Average Lead Time": 24.959703
+    },
+    {
+      "Item": "Cosmetics",
+      "Standard Deviation of Metric": 0.412452473,
+      "Mean of Metric": 1.000034545,
+      "Average Total Cost": 2197563.505,
+      "Average Lead Time": 25.00185802
+    },
+    {
+      "Item": "Fruits",
+      "Standard Deviation of Metric": 0.412786979,
+      "Mean of Metric": 0.999951823,
+      "Average Total Cost": 46906.2417,
+      "Average Lead Time": 24.99746232
+    },
+    {
+      "Item": "Household",
+      "Standard Deviation of Metric": 0.411812115,
+      "Mean of Metric": 1.001888617,
+      "Average Total Cost": 3365777.065,
+      "Average Lead Time": 25.09424467
+    },
+    {
+      "Item": "Meat",
+      "Standard Deviation of Metric": 0.41229738,
+      "Mean of Metric": 1.000597501,
+      "Average Total Cost": 2123577.081,
+      "Average Lead Time": 25.0294503
+    },
+    {
+      "Item": "Office Supplies",
+      "Standard Deviation of Metric": 0.411858553,
+      "Mean of Metric": 0.99955819,
+      "Average Total Cost": 3273991.679,
+      "Average Lead Time": 24.97743087
+    },
+    {
+      "Item": "Personal Care",
+      "Standard Deviation of Metric": 0.411985584,
+      "Mean of Metric": 1.00199957,
+      "Average Total Cost": 412085.5273,
+      "Average Lead Time": 25.10000718
+    },
+    {
+      "Item": "Snacks",
+      "Standard Deviation of Metric": 0.411744961,
+      "Mean of Metric": 0.999109286,
+      "Average Total Cost": 768301.9613,
+      "Average Lead Time": 24.95546554
+    },
+    {
+      "Item": "Vegetables",
+      "Standard Deviation of Metric": 0.413032896,
+      "Mean of Metric": 0.999832094,
+      "Average Total Cost": 772036.5563,
+      "Average Lead Time": 24.99161907
+    }
+  ]

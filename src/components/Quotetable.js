@@ -20,7 +20,7 @@ export class Quotetable extends React.Component {
             quoteRows: [],
             quotes: [],
             predictedQuotes: [],
-            errorEvaluating: false,
+            typeStatistics: [],
             isPredicting: false,
         }
     }
@@ -39,6 +39,13 @@ export class Quotetable extends React.Component {
             }, onrejected => console.log(onrejected));
     }
 
+    getTypeStatistics = () => {
+        fetch('http://localhost:4200/mock-predictions-stats')
+            .then(res => res.json())
+            .then(data => this.setState({typeStatistics: [...data]}),
+            onrejected => console.log(onrejected));
+    }
+
     getPredictedQuotes = input => {
         let deleted_status_quotes = input.map(quote => Object.assign({}, quote));
         deleted_status_quotes.forEach(quote => delete quote.Status);
@@ -53,7 +60,7 @@ export class Quotetable extends React.Component {
             },
             GlobalParameters: {}
         });
-        this.generateResultQuotes(this.state.quotes, this.state.predictedQuotes, true);
+        this.generateResultQuotes(true);
         return fetch(proxy + url, {
             method: 'POST',
             body: data,
@@ -75,13 +82,12 @@ export class Quotetable extends React.Component {
             }
         }, onrejected => console.log(onrejected));
 
-        // this.setState({predictedQuotes: data})
         // return fetch('http://localhost:4200/mock-predictions')
         //     .then(res => res.json())
         //     .then(data => {
-                // this.setState({
-                //     predictedQuotes: data.Results.output1,
-                // });
+        //         this.setState({
+        //             predictedQuotes: data.Results.output1,
+        //         });
         //     }, onrejected => console.log(onrejected));
     }
 
@@ -95,13 +101,14 @@ export class Quotetable extends React.Component {
         return Object.keys(predictedQuote).length !== 0;
     }
 
-    generateResultQuotes = (quotes, predictedQuotes, isFetchingPred = false) => {
-
+    generateResultQuotes = (isFetchingPred = false) => {
+        const { quotes, predictedQuotes, typeStatistics } = this.state;
         let newQuotes = [];
 
         if (quotes.length !== 0) {
             newQuotes = quotes.map((quote, i) => {
                 let predQuote = {};
+                let itemStats = {};
                 if (predictedQuotes.length !== 0) {
                     for (let newPredQuote of predictedQuotes) {
                         if (this.doQuotesMatch(quote, newPredQuote)) {
@@ -110,8 +117,17 @@ export class Quotetable extends React.Component {
                         }
                     }
                 }
+                if (typeStatistics.length !== 0) {
+                    for (let stat of typeStatistics) {
+                        if (quote["Item Type"] === stat["Item"]) {
+                            itemStats = stat;
+                            break;
+                        }
+                    }
+                }
                 console.log('Returning prediction: ', predQuote);
-                return <QuoteRow key={i} rowkey={i} quote={quote} prediction={predQuote} isFetchingPred={isFetchingPred}/>
+                console.log('Returning type stats: ', itemStats);
+                return <QuoteRow key={i} rowkey={i} quote={quote} prediction={predQuote} itemStats={itemStats} isFetchingPred={isFetchingPred}/>
             });
         }
 
@@ -120,7 +136,7 @@ export class Quotetable extends React.Component {
 
     updateQuotes = newQuote => {
         this.setState({quotes: [newQuote, ...this.state.quotes]}, () => {
-            this.generateResultQuotes(this.state.quotes, this.state.predictedQuotes);
+            this.generateResultQuotes();
         });
 
     }
@@ -128,18 +144,18 @@ export class Quotetable extends React.Component {
     handlePredictGoodness = () => {
         this.setState({isPredicting: true});
         this.getPredictedQuotes(this.state.quotes)
-            .then(() => this.generateResultQuotes(this.state.quotes, this.state.predictedQuotes));
+            .then(() => this.generateResultQuotes());
 
     };
 
     handleGetQuotesFromVendors = () => {
         this.getQuotes().then(() => {
-            this.generateResultQuotes(this.state.quotes, this.state.predictedQuotes);
-        });
+            this.generateResultQuotes();
+        }).then(() => this.getTypeStatistics());
     }
 
     render = () => {
-        const {fieldRow, quoteRows, quotes, errorEvaluating} = this.state;
+        const {fieldRow, quoteRows, quotes} = this.state;
         
         const isQuotesEmpty = quotes.length === 0;
 
@@ -172,25 +188,47 @@ class QuoteRow extends React.Component {
         }
     }
 
-    render = () => {
+    isMetricWithinRange = (prediction_score, itemStats_std, quote_metric) => {
+        console.log(prediction_score, itemStats_std, quote_metric);
+        const min = parseFloat(prediction_score) - parseFloat(itemStats_std);
+        const max = parseFloat(prediction_score) + parseFloat(itemStats_std);
+        console.log(`Max: ${max}   Min: ${min}`);
+        return min <= quote_metric && quote_metric <= max;
+    }
 
-        const isRowPredicted = Object.keys(this.props.prediction).length !== 0;
+    render = () => {
+        const {rowkey, itemStats, prediction, quote, isFetchingPred} = this.props;
+        const isRowPredicted = Object.keys(prediction).length !== 0;
+        const allValuesPresent = Object.keys(prediction).length !== 0 && Object.keys(itemStats).length !== 0;
 
         let acceptOrReject = '';
-        let row = Object.values(this.props.quote).map((value, i) => <div key={i}>{value}</div>);
+        let row = Object.values(quote).map((value, i) => <div key={i}>{value}</div>);
         
-        if (parseFloat(this.props.prediction['Scored Labels']) < this.props.quote['Metric']) {
-            row[0] = (<div key={0}><ProblemIcon id='problem-icon'/></div>);
-            acceptOrReject = 'reject';
-        } else if (parseFloat(this.props.prediction['Scored Labels']) >= this.props.quote['Metric']){
-            row[0] = (<div key={0}><ApprovedIcon id='approved-icon'/></div>);
-            acceptOrReject = 'accept';
-        } else if (this.props.isFetchingPred) {
+        if (allValuesPresent) {
+            if (this.isMetricWithinRange(
+                prediction['Scored Labels'], 
+                itemStats['Standard Deviation of Metric'], 
+                quote['Metric'])
+                ) {
+                row[0] = (<div key={0}><ApprovedIcon id='approved-icon'/></div>);
+                acceptOrReject = 'accept';
+            } else {
+                row[0] = (<div key={0}><ProblemIcon id='problem-icon'/></div>);    
+                acceptOrReject = 'reject';
+            }
+        // }
+        // if (parseFloat(prediction['Scored Labels']) < quote['Metric']) {
+        //     row[0] = (<div key={0}><ProblemIcon id='problem-icon'/></div>);
+        //     acceptOrReject = 'reject';
+        // } else if (parseFloat(prediction['Scored Labels']) >= quote['Metric']){
+        //     row[0] = (<div key={0}><ApprovedIcon id='approved-icon'/></div>);
+        //     acceptOrReject = 'accept';
+        } else if (isFetchingPred) {
             row[0] = (<div key={0}><Spinner animation="border" /></div>);
         }
 
         let bgColorRow = ' oddRow';
-        if (this.props.rowkey % 2 === 0) {
+        if (rowkey % 2 === 0) {
             bgColorRow = ' evenRow';
         }
 
