@@ -3,7 +3,7 @@ import React from 'react';
 
 import Collapse from 'react-bootstrap/Collapse';
 import Card from 'react-bootstrap/Card';
-import { Button, CardGroup, ProgressBar } from 'react-bootstrap';
+import { Button} from 'react-bootstrap';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Spinner from 'react-bootstrap/Spinner';
 
@@ -223,12 +223,7 @@ class QuoteRow extends React.Component {
         }
     }
 
-    isMetricWithinRange = (prediction_score, itemStats, quote_metric) => {
-        // console.log(prediction_score, itemStats_std, quote_metric);
-        // const min = parseFloat(prediction_score) - parseFloat(itemStats_std);
-        // const max = parseFloat(prediction_score) + parseFloat(itemStats_std);
-        // console.log(`Max: ${max}   Min: ${min}`);
-        // return min < quote_metric && quote_metric < max;
+    isMetricWithinRange = (prediction_score, itemStats) => {
         console.log(`${prediction_score} < ${itemStats['Mean of Metric']} + ${parseFloat(itemStats['Standard Deviation of Metric'])}\n${prediction_score < itemStats['Mean of Metric'] + itemStats['Standard Deviation of Metric']}`);
         return parseFloat(prediction_score) < parseFloat(itemStats['Mean of Metric']) + parseFloat(itemStats['Standard Deviation of Metric']);
     }
@@ -281,7 +276,6 @@ class QuoteRow extends React.Component {
                                     <StatCard 
                                         title="Standard Dev + Mean" 
                                         body={(parseFloat(itemStats['Standard Deviation of Metric']) + parseFloat(itemStats['Mean of Metric'])).toFixed(3)}/>
-                                    {/* <StatCard title="Quote Metric" body={quote['Metric']}/> */}
                                 </div>
                             </div>
                         </Card>
