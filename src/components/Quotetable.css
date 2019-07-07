@@ -65,10 +65,37 @@
 
 .cardEvaluation #status {
     width: 30%;
-    background-color: gray;
 }
 
-.cardEvaluation #statistics {
+.cardEvaluation #status > h2{
+    font-size: 40px;
+}
+
+#statistics {
     flex: 1;
-    background-color: gainsboro;
+    display: flex;
+    justify-content: center;
+}
+
+#statistics > div {
+    margin: auto;
+    padding: 20px;
+    border-radius: 20px;
+    background-color: ghostwhite;
+    width: 20%;
+}
+
+.stat #title {
+    text-align: center;
+    border-bottom: 2px solid rgb(238, 238, 238);
+    border-radius: 100px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.stat #value {
+    text-align: center;
+    margin: 30 30 0 30;
+    font-weight: 1000;
+    font-size: 40px;
 }

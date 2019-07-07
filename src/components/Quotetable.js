@@ -3,7 +3,7 @@ import React from 'react';
 
 import Collapse from 'react-bootstrap/Collapse';
 import Card from 'react-bootstrap/Card';
-import { Button, CardGroup } from 'react-bootstrap';
+import { Button, CardGroup, ProgressBar } from 'react-bootstrap';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Spinner from 'react-bootstrap/Spinner';
 
@@ -25,6 +25,10 @@ export class Quotetable extends React.Component {
         }
     }
 
+    componentDidMount = () => {
+        this.getTypeStatistics();
+    }
+
     componentWillReceiveProps = nextProps => {
         this.updateQuotes(nextProps.newQuote);
     }
@@ -32,6 +36,12 @@ export class Quotetable extends React.Component {
     getQuotes = () => {
         return fetch('http://localhost:4200/mock')
         .then(res => res.json())
+        .then(data => {
+            data.map(quote => {
+                quote['Metric'] = parseFloat(quote['Metric']).toFixed(3);
+            })
+            return data;
+        })
         .then(data => {
                 this.setState({
                     quotes: [...this.state.quotes, ...data.map(quote => ({Status: '', ...quote}))]
@@ -42,7 +52,13 @@ export class Quotetable extends React.Component {
     getTypeStatistics = () => {
         fetch('http://localhost:4200/mock-predictions-stats')
             .then(res => res.json())
-            .then(data => this.setState({typeStatistics: [...data]}),
+            .then(data => {
+                data.map(quote => {
+                    quote['Standard Deviation of Metric'] = parseFloat(quote['Standard Deviation of Metric']).toFixed(3);
+                })
+                return data;
+            })
+            .then(data => {this.setState({typeStatistics: [...data]})},
             onrejected => console.log(onrejected));
     }
 
@@ -72,6 +88,12 @@ export class Quotetable extends React.Component {
         // })
         // .then(res => res.json())
         // .then(data => {
+        //     data.Results.output1.map(quote => {
+        //         quote['Scored Labels'] = parseFloat(quote['Scored Labels']).toFixed(3);
+        //     })
+        //     return data;
+        // })
+        // .then(data => {
         //     try {
         //         this.setState({
         //             predictedQuotes: data.Results.output1,
@@ -85,14 +107,32 @@ export class Quotetable extends React.Component {
         return fetch('http://localhost:4200/mock-predictions')
             .then(res => res.json())
             .then(data => {
+                data.Results.output1.map(quote => {
+                    quote['Scored Labels'] = parseFloat(quote['Scored Labels']).toFixed(3);
+                })
+                return data;
+            })
+            .then(data => {
                 this.setState({
                     predictedQuotes: data.Results.output1,
                 });
             }, onrejected => console.log(onrejected));
     }
 
+    calculateMetrics = (quotes) => {
+        const { typeStatistics } = this.state;
+
+        const newQuotes = quotes.map(quote => Object.assign({}, quote));
+        newQuotes.forEach(quote => {
+            const itemStat = typeStatistics.filter(stat => stat['Item'] === quote['Item Type'])[0];
+            quote['Metric'] = parseFloat(((0.5 * (parseFloat(quote['Total Cost']) / parseFloat(itemStat['Average Total Cost']))) + (0.5 * (parseFloat(quote['Lead Time (DAYS)']) / parseFloat(itemStat['Average Lead Time']))))).toFixed(3);
+        });
+        this.setState({quotes: newQuotes});
+        return newQuotes;
+    }
+
     doQuotesMatch = (quote, predictedQuote) => {
-        let features = Object.keys(predictedQuote).filter(feature => feature !== 'Scored Labels');
+        let features = Object.keys(predictedQuote).filter(feature => feature !== 'Scored Labels' && feature !== 'Metric');
         for (let feature of features) {
             if (`${quote[feature]}` !== `${predictedQuote[feature]}`) {
                 return false;
@@ -106,7 +146,8 @@ export class Quotetable extends React.Component {
         let newQuotes = [];
 
         if (quotes.length !== 0) {
-            newQuotes = quotes.map((quote, i) => {
+            newQuotes = this.calculateMetrics(quotes);
+            newQuotes = newQuotes.map((quote, i) => {
                 let predQuote = {};
                 let itemStats = {};
                 if (predictedQuotes.length !== 0) {
@@ -135,9 +176,7 @@ export class Quotetable extends React.Component {
     }
 
     updateQuotes = newQuote => {
-        this.setState({quotes: [newQuote, ...this.state.quotes]}, () => {
-            this.generateResultQuotes();
-        });
+        this.setState({quotes: [newQuote, ...this.state.quotes]}, () => this.generateResultQuotes());
 
     }
 
@@ -149,9 +188,9 @@ export class Quotetable extends React.Component {
     };
 
     handleGetQuotesFromVendors = () => {
-        this.getQuotes().then(() => {
-            this.generateResultQuotes();
-        }).then(() => this.getTypeStatistics());
+        this.getQuotes()
+            .then(() => this.calculateMetrics(this.state.quotes))
+            .then(() => this.generateResultQuotes());
     }
 
     render = () => {
@@ -193,7 +232,7 @@ class QuoteRow extends React.Component {
         const min = parseFloat(prediction_score) - parseFloat(itemStats_std);
         const max = parseFloat(prediction_score) + parseFloat(itemStats_std);
         console.log(`Max: ${max}   Min: ${min}`);
-        return min <= quote_metric && quote_metric <= max;
+        return min < quote_metric && quote_metric < max;
     }
 
     render = () => {
@@ -232,13 +271,6 @@ class QuoteRow extends React.Component {
             bgColorRow = ' evenRow';
         }
 
-        let cardBgColor = '';
-        if (acceptOrReject === 'accept') {
-            cardBgColor = 'success';
-        } else if (acceptOrReject === 'reject') {
-            cardBgColor = 'reject';
-        }
-
         return (
             <React.Fragment>
                 <ListGroup.Item bsPrefix={'row' + bgColorRow} onClick={() => this.setState({collapse: !this.state.collapse && isRowPredicted})}>
@@ -254,7 +286,22 @@ class QuoteRow extends React.Component {
                                     {acceptOrReject === 'reject' && <h2 id='reject'>Reject</h2>}
                                 </div>
                                 <div id="statistics">
-                                    <CardGroup>
+                                    <StatCard title="Prediction Score" body={prediction['Scored Labels']}/>
+                                    <StatCard title="Standard Deviation" body={itemStats['Standard Deviation of Metric']}/>
+                                    <StatCard title="Quote Metric" body={quote['Metric']}/>
+                                    {/* <div id='scores'>
+                                        <div className='title'>Prediction Score</div>
+                                        <div>{prediction['Scored Labels']}</div>
+                                    </div>
+                                    <div id='std'>
+                                        <div>Prediction Standard Deviation</div>
+                                        <div>{itemStats['Standard Deviation of Metric']}</div>
+                                    </div>
+                                    <div id='metric'>
+                                        <div>Quote Metric</div>
+                                        <div>{quote['Metric']}</div>
+                                    </div> */}
+                                    {/* <CardGroup>
                                         <Card>
                                             <Card.Title>Prediction Score</Card.Title>
                                             <Card.Body>{prediction['Scored Labels']}</Card.Body>
@@ -267,7 +314,7 @@ class QuoteRow extends React.Component {
                                             <Card.Title>Quote Metric</Card.Title>
                                             <Card.Body>{quote['Metric']}</Card.Body>
                                         </Card>
-                                    </CardGroup>
+                                    </CardGroup> */}
                                 </div>
                             </div>
                         </Card>
@@ -277,3 +324,12 @@ class QuoteRow extends React.Component {
         );
     };
 };
+
+const StatCard = props => {
+    return (
+        <div className='stat'>
+            <div id='title'>{props.title}</div>
+            <div id='value'>{props.body}</div>
+        </div>
+    );
+}

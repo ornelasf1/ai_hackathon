@@ -29,16 +29,15 @@ export class Quote extends React.Component {
         // "Region": "Asia",
         // "Country": "Singapore",
         // "Item Type": "Household",
-        // "Sales Channel": "Offline",
-        // "Vendor": "C",
+        // X"Sales Channel": "Offline",
+        // X"Vendor": "C",
         // X "Transaction Date": "6/27/2010",
         // X "Transaction ID": 922752702,
         // X "Received Date": "8/7/2010",
-
         // "Lead Time (DAYS)": 41,
-        // "Units Ordered": 1885,
-        // "Unit Cost": 668.27,
-        // "Freight Cost": 16246,
+        // X"Units Ordered": 1885,
+        // X"Unit Cost": 668.27,
+        // X"Freight Cost": 16246,
         // "Total Cost": 1275934.95,
         // X "Metric": 1.009546786
         return (
