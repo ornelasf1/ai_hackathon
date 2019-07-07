@@ -82,14 +82,14 @@
     padding: 20px;
     border-radius: 20px;
     background-color: ghostwhite;
-    width: 20%;
+    height: 150px;
 }
 
 .stat #title {
     text-align: center;
     border-bottom: 2px solid rgb(238, 238, 238);
-    border-radius: 100px;
     font-weight: bold;
+    height: 60px;
     font-size: 20px;
 }
 

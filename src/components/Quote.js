@@ -20,6 +20,9 @@ export class Quote extends React.Component {
                 newQuote[field] = '';
             }
         });
+        // if (newQuote['Total Cost'] === ''){
+        //     newQuote['Total Cost'] = parseFloat((parseFloat(newQuote['Units Ordered']) * parseFloat(newQuote['Unit Cost'])) + parseFloat(newQuote['Freight Cost'])).toFixed(2);
+        // }
         console.log(newQuote);
         this.props.handleNewQuote(newQuote);
     };
@@ -58,11 +61,11 @@ export class Quote extends React.Component {
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label>Sales Channel</Form.Label>
-                            <Form.Control name="Sales Channel" placeholder="Enter sales channel"/>
+                            <Form.Control disabled name="Sales Channel" placeholder="Enter sales channel" value="Offline"/>
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label>Vendor</Form.Label>
-                            <Form.Control name="Vendor" placeholder="Enter vendor"/>
+                            <Form.Control disabled name="Vendor" placeholder="Enter vendor" value="Supermarket"/>
                         </Form.Group>
                     </Form.Row>
                     <Form.Row>
@@ -72,15 +75,15 @@ export class Quote extends React.Component {
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label>Units ordered</Form.Label>
-                            <Form.Control name="Units Ordered" placeholder="Enter units ordered"/>
+                            <Form.Control disabled name="Units Ordered" placeholder="Enter units ordered" />
                         </Form.Group>   
                         <Form.Group as={Col}>
                             <Form.Label>Unit Cost</Form.Label>
-                            <Form.Control name="Unit Cost" placeholder="Enter unit cost"/>
+                            <Form.Control disabled name="Unit Cost" placeholder="Enter unit cost"/>
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label>Freight Cost</Form.Label>
-                            <Form.Control name="Frieght Cost" placeholder="Enter freight cost"/>
+                            <Form.Control disabled name="Freight Cost" placeholder="Enter freight cost"/>
                         </Form.Group>
                         <Form.Group as={Col}>
                             <Form.Label>Total Cost</Form.Label>

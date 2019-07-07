@@ -63,60 +63,60 @@ export class Quotetable extends React.Component {
     }
 
     getPredictedQuotes = input => {
-        // let deleted_status_quotes = input.map(quote => Object.assign({}, quote));
-        // deleted_status_quotes.forEach(quote => delete quote.Status);
-        // console.log(deleted_status_quotes);
+        let deleted_status_quotes = input.map(quote => Object.assign({}, quote));
+        deleted_status_quotes.forEach(quote => delete quote.Status);
+        console.log(deleted_status_quotes);
         
-        // const proxy = 'https://cors-anywhere.herokuapp.com/';
-        // const url = 'https://ussouthcentral.services.azureml.net/workspaces/4288e7c76c3a48ee8202a1b963906f68/services/4ec835e46fcd46a5bfe4d389e3d918ee/execute?api-version=2.0&format=swagger';
-        // const api_key = 'TaJrYL+dmIyheDoSNkHE0hozyI6spM/Jn+t7dOf0Hb1j9J28JLj/0+QBfD/AeMD5X8UACXVj2qEnk7LqEiixPw==';
-        // const data = JSON.stringify({
-        //     Inputs: {
-        //         input1: [...deleted_status_quotes]
-        //     },
-        //     GlobalParameters: {}
-        // });
-        // this.generateResultQuotes(true);
-        // return fetch(proxy + url, {
-        //     method: 'POST',
-        //     body: data,
-        //     headers: {
-        //         'Authorization': 'Bearer ' + api_key,
-        //         'Content-Length': data.length,
-        //         'Content-Type': 'application/json',
-        //     }
-        // })
-        // .then(res => res.json())
-        // .then(data => {
-        //     data.Results.output1.map(quote => {
-        //         quote['Scored Labels'] = parseFloat(quote['Scored Labels']).toFixed(3);
-        //     })
-        //     return data;
-        // })
-        // .then(data => {
-        //     try {
-        //         this.setState({
-        //             predictedQuotes: data.Results.output1,
-        //         });
-        //     } catch(e) {
-        //         console.log('Data failed to be recognized: ', e);
-        //         this.setState({errorEvaluating: true});
-        //     }
-        // }, onrejected => console.log(onrejected));
-
-        return fetch('http://localhost:4200/mock-predictions')
-            .then(res => res.json())
-            .then(data => {
-                data.Results.output1.map(quote => {
-                    quote['Scored Labels'] = parseFloat(quote['Scored Labels']).toFixed(3);
-                })
-                return data;
+        const proxy = 'https://cors-anywhere.herokuapp.com/';
+        const url = 'https://ussouthcentral.services.azureml.net/workspaces/4288e7c76c3a48ee8202a1b963906f68/services/4ec835e46fcd46a5bfe4d389e3d918ee/execute?api-version=2.0&format=swagger';
+        const api_key = '5SYTc0qQO21061zLANMre2o4LZVw8MLJ80CUS8Xexvv1wikCdEbHMFQn+MELUP24+kUzoLKfOp5QAHnHOdzpYw==';
+        const data = JSON.stringify({
+            Inputs: {
+                input1: [...deleted_status_quotes]
+            },
+            GlobalParameters: {}
+        });
+        this.generateResultQuotes(true);
+        return fetch(proxy + url, {
+            method: 'POST',
+            body: data,
+            headers: {
+                'Authorization': 'Bearer ' + api_key,
+                'Content-Length': data.length,
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            data.Results.output1.map(quote => {
+                quote['Scored Labels'] = parseFloat(quote['Scored Labels']).toFixed(3);
             })
-            .then(data => {
+            return data;
+        })
+        .then(data => {
+            try {
                 this.setState({
                     predictedQuotes: data.Results.output1,
                 });
-            }, onrejected => console.log(onrejected));
+            } catch(e) {
+                console.log('Data failed to be recognized: ', e);
+                this.setState({errorEvaluating: true});
+            }
+        }, onrejected => console.log(onrejected));
+
+        // return fetch('http://localhost:4200/mock-predictions')
+        //     .then(res => res.json())
+        //     .then(data => {
+        //         data.Results.output1.map(quote => {
+        //             quote['Scored Labels'] = parseFloat(quote['Scored Labels']).toFixed(3);
+        //         })
+        //         return data;
+        //     })
+        //     .then(data => {
+        //         this.setState({
+        //             predictedQuotes: data.Results.output1,
+        //         });
+        //     }, onrejected => console.log(onrejected));
     }
 
     calculateMetrics = (quotes) => {
@@ -227,12 +227,14 @@ class QuoteRow extends React.Component {
         }
     }
 
-    isMetricWithinRange = (prediction_score, itemStats_std, quote_metric) => {
-        console.log(prediction_score, itemStats_std, quote_metric);
-        const min = parseFloat(prediction_score) - parseFloat(itemStats_std);
-        const max = parseFloat(prediction_score) + parseFloat(itemStats_std);
-        console.log(`Max: ${max}   Min: ${min}`);
-        return min < quote_metric && quote_metric < max;
+    isMetricWithinRange = (prediction_score, itemStats, quote_metric) => {
+        // console.log(prediction_score, itemStats_std, quote_metric);
+        // const min = parseFloat(prediction_score) - parseFloat(itemStats_std);
+        // const max = parseFloat(prediction_score) + parseFloat(itemStats_std);
+        // console.log(`Max: ${max}   Min: ${min}`);
+        // return min < quote_metric && quote_metric < max;
+        console.log(`${prediction_score} < ${itemStats['Mean of Metric']} + ${parseFloat(itemStats['Standard Deviation of Metric'])}\n${prediction_score < itemStats['Mean of Metric'] + itemStats['Standard Deviation of Metric']}`);
+        return parseFloat(prediction_score) < parseFloat(itemStats['Mean of Metric']) + parseFloat(itemStats['Standard Deviation of Metric']);
     }
 
     render = () => {
@@ -246,7 +248,7 @@ class QuoteRow extends React.Component {
         if (allValuesPresent) {
             if (this.isMetricWithinRange(
                 prediction['Scored Labels'], 
-                itemStats['Standard Deviation of Metric'], 
+                itemStats, 
                 quote['Metric'])
                 ) {
                 row[0] = (<div key={0}><ApprovedIcon id='approved-icon'/></div>);
@@ -255,13 +257,6 @@ class QuoteRow extends React.Component {
                 row[0] = (<div key={0}><ProblemIcon id='problem-icon'/></div>);    
                 acceptOrReject = 'reject';
             }
-        // }
-        // if (parseFloat(prediction['Scored Labels']) < quote['Metric']) {
-        //     row[0] = (<div key={0}><ProblemIcon id='problem-icon'/></div>);
-        //     acceptOrReject = 'reject';
-        // } else if (parseFloat(prediction['Scored Labels']) >= quote['Metric']){
-        //     row[0] = (<div key={0}><ApprovedIcon id='approved-icon'/></div>);
-        //     acceptOrReject = 'accept';
         } else if (isFetchingPred) {
             row[0] = (<div key={0}><Spinner animation="border" /></div>);
         }
@@ -287,34 +282,10 @@ class QuoteRow extends React.Component {
                                 </div>
                                 <div id="statistics">
                                     <StatCard title="Prediction Score" body={prediction['Scored Labels']}/>
-                                    <StatCard title="Standard Deviation" body={itemStats['Standard Deviation of Metric']}/>
-                                    <StatCard title="Quote Metric" body={quote['Metric']}/>
-                                    {/* <div id='scores'>
-                                        <div className='title'>Prediction Score</div>
-                                        <div>{prediction['Scored Labels']}</div>
-                                    </div>
-                                    <div id='std'>
-                                        <div>Prediction Standard Deviation</div>
-                                        <div>{itemStats['Standard Deviation of Metric']}</div>
-                                    </div>
-                                    <div id='metric'>
-                                        <div>Quote Metric</div>
-                                        <div>{quote['Metric']}</div>
-                                    </div> */}
-                                    {/* <CardGroup>
-                                        <Card>
-                                            <Card.Title>Prediction Score</Card.Title>
-                                            <Card.Body>{prediction['Scored Labels']}</Card.Body>
-                                        </Card>
-                                        <Card>
-                                            <Card.Title>Prediction Standard Deviation</Card.Title>
-                                            <Card.Body>{itemStats['Standard Deviation of Metric']}</Card.Body>
-                                        </Card>
-                                        <Card>
-                                            <Card.Title>Quote Metric</Card.Title>
-                                            <Card.Body>{quote['Metric']}</Card.Body>
-                                        </Card>
-                                    </CardGroup> */}
+                                    <StatCard 
+                                        title="Standard Dev + Mean" 
+                                        body={(parseFloat(itemStats['Standard Deviation of Metric']) + parseFloat(itemStats['Mean of Metric'])).toFixed(3)}/>
+                                    {/* <StatCard title="Quote Metric" body={quote['Metric']}/> */}
                                 </div>
                             </div>
                         </Card>
