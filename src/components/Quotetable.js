@@ -37,12 +37,6 @@ export class Quotetable extends React.Component {
         return fetch('http://localhost:4200/mock')
         .then(res => res.json())
         .then(data => {
-            data.map(quote => {
-                quote['Metric'] = parseFloat(quote['Metric']).toFixed(3);
-            })
-            return data;
-        })
-        .then(data => {
                 this.setState({
                     quotes: [...this.state.quotes, ...data.map(quote => ({Status: '', ...quote}))]
                 });
@@ -64,11 +58,15 @@ export class Quotetable extends React.Component {
 
     getPredictedQuotes = input => {
         let deleted_status_quotes = input.map(quote => Object.assign({}, quote));
-        deleted_status_quotes.forEach(quote => delete quote.Status);
+        deleted_status_quotes.forEach(quote => {
+            delete quote.Status;
+            quote['Inverse ROI of Project'] = 1;
+            quote['Metric'] = 1;
+        });
         console.log(deleted_status_quotes);
         
         const proxy = 'https://cors-anywhere.herokuapp.com/';
-        const url = 'https://ussouthcentral.services.azureml.net/workspaces/4288e7c76c3a48ee8202a1b963906f68/services/4ec835e46fcd46a5bfe4d389e3d918ee/execute?api-version=2.0&format=swagger';
+        const url = 'https://ussouthcentral.services.azureml.net/workspaces/882b498ba2484c78a9268c55682faf6b/services/009a999d5edb41c08081e2e99f4c0cb0/execute?api-version=2.0&format=swagger';
         const api_key = '5SYTc0qQO21061zLANMre2o4LZVw8MLJ80CUS8Xexvv1wikCdEbHMFQn+MELUP24+kUzoLKfOp5QAHnHOdzpYw==';
         const data = JSON.stringify({
             Inputs: {
@@ -146,8 +144,7 @@ export class Quotetable extends React.Component {
         let newQuotes = [];
 
         if (quotes.length !== 0) {
-            newQuotes = this.calculateMetrics(quotes);
-            newQuotes = newQuotes.map((quote, i) => {
+            newQuotes = quotes.map((quote, i) => {
                 let predQuote = {};
                 let itemStats = {};
                 if (predictedQuotes.length !== 0) {
@@ -189,7 +186,6 @@ export class Quotetable extends React.Component {
 
     handleGetQuotesFromVendors = () => {
         this.getQuotes()
-            .then(() => this.calculateMetrics(this.state.quotes))
             .then(() => this.generateResultQuotes());
     }
 

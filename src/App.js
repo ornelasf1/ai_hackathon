@@ -18,8 +18,7 @@ const schema = [
   'Units Ordered',
   'Unit Cost',
   'Freight Cost',
-  'Total Cost',
-  'Metric'
+  'Total Cost'
 ];
 
 

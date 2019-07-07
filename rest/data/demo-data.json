@@ -12,8 +12,7 @@
       "Units Ordered": 1885,
       "Unit Cost": 668.27,
       "Freight Cost": 16246,
-      "Total Cost": 1275934.95,
-      "Metric": 1.009546786
+      "Total Cost": 1275934.95
     },
     {
       "Region": "Europe",
@@ -28,8 +27,7 @@
       "Units Ordered": 5341,
       "Unit Cost": 154.06,
       "Freight Cost": 12819,
-      "Total Cost": 835653.46,
-      "Metric": 0.641200396
+      "Total Cost": 835653.46
     },
     {
       "Region": "Europe",
@@ -44,8 +42,7 @@
       "Units Ordered": 3584,
       "Unit Cost": 421.89,
       "Freight Cost": 18143,
-      "Total Cost": 1530196.76,
-      "Metric": 0.90029367
+      "Total Cost": 1530196.76
     },
     {
       "Region": "Australia and Oceania",
@@ -60,8 +57,7 @@
       "Units Ordered": 3492,
       "Unit Cost": 651.21,
       "Freight Cost": 37175,
-      "Total Cost": 2311200.32,
-      "Metric": 1.07297044
+      "Total Cost": 2311200.32
     },
     {
       "Region": "Australia and Oceania",
@@ -76,8 +72,7 @@
       "Units Ordered": 3977,
       "Unit Cost": 109.28,
       "Freight Cost": 6522,
-      "Total Cost": 441128.56,
-      "Metric": 0.900718503
+      "Total Cost": 441128.56
     },
     {
       "Region": "Asia",
@@ -92,8 +87,7 @@
       "Units Ordered": 982,
       "Unit Cost": 421.89,
       "Freight Cost": 5075,
-      "Total Cost": 419370.98,
-      "Metric": 0.638743321
+      "Total Cost": 419370.98
     },
     {
       "Region": "Asia",
@@ -108,8 +102,7 @@
       "Units Ordered": 2479,
       "Unit Cost": 651.21,
       "Freight Cost": 29187,
-      "Total Cost": 1643536.59,
-      "Metric": 0.971003701
+      "Total Cost": 1643536.59
     },
     {
       "Region": "Asia",
@@ -124,8 +117,7 @@
       "Units Ordered": 3475,
       "Unit Cost": 437.2,
       "Freight Cost": 29581,
-      "Total Cost": 1548851,
-      "Metric": 1.072400032
+      "Total Cost": 1548851
     },
     {
       "Region": "Asia",
@@ -140,8 +132,7 @@
       "Units Ordered": 1004,
       "Unit Cost": 651.21,
       "Freight Cost": 10573,
-      "Total Cost": 664387.84,
-      "Metric": 0.54146644
+      "Total Cost": 664387.84
     },
     {
       "Region": "Europe",
@@ -156,8 +147,7 @@
       "Units Ordered": 9135,
       "Unit Cost": 109.28,
       "Freight Cost": 14063,
-      "Total Cost": 1012335.8,
-      "Metric": 1.559599689
+      "Total Cost": 1012335.8
     },
     {
       "Region": "Europe",
@@ -172,8 +162,7 @@
       "Units Ordered": 3965,
       "Unit Cost": 421.89,
       "Freight Cost": 33242,
-      "Total Cost": 1706035.85,
-      "Metric": 0.621696
+      "Total Cost": 1706035.85
     },
     {
       "Region": "Sub-Saharan Africa",
@@ -188,8 +177,7 @@
       "Units Ordered": 8626,
       "Unit Cost": 437.2,
       "Freight Cost": 39118,
-      "Total Cost": 3810405.2,
-      "Metric": 1.806956805
+      "Total Cost": 3810405.2
     },
     {
       "Region": "Sub-Saharan Africa",
@@ -204,8 +192,7 @@
       "Units Ordered": 8277,
       "Unit Cost": 47.45,
       "Freight Cost": 5991,
-      "Total Cost": 398734.65,
-      "Metric": 1.632250722
+      "Total Cost": 398734.65
     },
     {
       "Region": "Sub-Saharan Africa",
@@ -220,8 +207,7 @@
       "Units Ordered": 5112,
       "Unit Cost": 9.33,
       "Freight Cost": 903,
-      "Total Cost": 48597.96,
-      "Metric": 1.058035646
+      "Total Cost": 48597.96
     },
     {
       "Region": "Central America and the Caribbean",
@@ -236,8 +222,7 @@
       "Units Ordered": 3354,
       "Unit Cost": 255.28,
       "Freight Cost": 14384,
-      "Total Cost": 870593.12,
-      "Metric": 0.539023493
+      "Total Cost": 870593.12
     },
     {
       "Region": "Middle East and North Africa",
@@ -252,7 +237,6 @@
       "Units Ordered": 4257,
       "Unit Cost": 421.89,
       "Freight Cost": 32540,
-      "Total Cost": 1828525.73,
-      "Metric": 1.01053695
+      "Total Cost": 1828525.73
     }
    ]
