@@ -53,10 +53,23 @@
 
 #accept {
     color: greenyellow;
+    font-size: 50px;
 }
 
 #reject {
     color: crimson;
+    font-size: 50px;
+}
+
+#description_title {
+    color: gray;
+}
+
+#description_value {
+    text-align: center;
+    font-weight: 400;
+    font-size: 30px;
+    margin-top: 20px;
 }
 
 .cardEvaluation{
@@ -65,10 +78,11 @@
 
 .cardEvaluation #status {
     width: 30%;
+    height: auto;
 }
 
-.cardEvaluation #status > h2{
-    font-size: 40px;
+.progress{
+    margin-top: 40px;
 }
 
 #statistics {
@@ -82,6 +96,7 @@
     padding: 20px;
     border-radius: 20px;
     background-color: ghostwhite;
+    width: 300px;
     height: 150px;
 }
 
@@ -90,7 +105,7 @@
     border-bottom: 2px solid rgb(238, 238, 238);
     font-weight: bold;
     height: 60px;
-    font-size: 20px;
+    font-size: 25px;
 }
 
 .stat #value {

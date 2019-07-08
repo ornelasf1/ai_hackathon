@@ -3,7 +3,7 @@ import React from 'react';
 
 import Collapse from 'react-bootstrap/Collapse';
 import Card from 'react-bootstrap/Card';
-import { Button} from 'react-bootstrap';
+import { Button, ProgressBar} from 'react-bootstrap';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Spinner from 'react-bootstrap/Spinner';
 
@@ -256,6 +256,10 @@ class QuoteRow extends React.Component {
             bgColorRow = ' evenRow';
         }
 
+        const predictionScore = parseFloat(prediction['Scored Labels']).toFixed(3).toString();
+        const std = parseFloat(itemStats['Standard Deviation of Metric']).toFixed(3).toString();
+        const mean = parseFloat(itemStats['Mean of Metric']).toFixed(3).toString();
+
         return (
             <React.Fragment>
                 <ListGroup.Item bsPrefix={'row' + bgColorRow} onClick={() => this.setState({collapse: !this.state.collapse && isRowPredicted})}>
@@ -264,16 +268,29 @@ class QuoteRow extends React.Component {
                 {isRowPredicted && 
                 <ListGroup.Item bsPrefix='row'>
                     <Collapse in={this.state.collapse}>
-                        <Card body>
+                        <Card body id='card'>
                             <div className='cardEvaluation'>
                                 <div id="status">
-                                    {acceptOrReject === 'accept' && <h2 id='accept'>Accept</h2>}
-                                    {acceptOrReject === 'reject' && <h2 id='reject'>Reject</h2>}
+                                    {acceptOrReject === 'accept' && 
+                                    <div>
+                                        <h2 id='accept'>Accept</h2>
+                                        {parseFloat(predictionScore) < parseFloat(mean) && <h4 id='description_title'>The prediction score is less than the average metric of this type.</h4>}
+                                        {parseFloat(predictionScore) >= parseFloat(mean) && <h4 id='description_title'>The prediction score is greater than the average metric of this type, but within 1 standard deviation.</h4>}
+                                        <h4 id='description_value'>{predictionScore + ' < ' + mean + ' + ' + std }</h4>
+                                    </div>}
+                                    {acceptOrReject === 'reject' && 
+                                    <div>
+                                        <h2 id='reject'>Reject</h2>
+                                        {parseFloat(predictionScore) < parseFloat(10000) && <h4 id='description_title'>The prediciton score is surpassing the upper threshold.</h4>}
+                                        {parseFloat(predictionScore) >= parseFloat(10000) && <h4 id='description_title'>Please. Don't do it.</h4>}
+                                        {/* <h4 id='description_title'>The prediciton score is surpassing the upper threshold.</h4> */}
+                                        <h4 id='description_value'>{predictionScore + ' < ' + mean + ' + ' + std }</h4>
+                                    </div>}
                                 </div>
                                 <div id="statistics">
                                     <StatCard title="Prediction Score" body={prediction['Scored Labels']}/>
                                     <StatCard 
-                                        title="Standard Dev + Mean" 
+                                        title="Upper Threshold" 
                                         body={(parseFloat(itemStats['Standard Deviation of Metric']) + parseFloat(itemStats['Mean of Metric'])).toFixed(3)}/>
                                 </div>
                             </div>
