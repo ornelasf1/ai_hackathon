@@ -239,8 +239,7 @@ class QuoteRow extends React.Component {
         if (allValuesPresent) {
             if (this.isMetricWithinRange(
                 prediction['Scored Labels'], 
-                itemStats, 
-                quote['Metric'])
+                itemStats)
                 ) {
                 row[0] = (<div key={0}><ApprovedIcon id='approved-icon'/></div>);
                 acceptOrReject = 'accept';
