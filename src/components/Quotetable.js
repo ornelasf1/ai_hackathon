@@ -66,8 +66,8 @@ export class Quotetable extends React.Component {
         console.log(deleted_status_quotes);
         
         const proxy = 'https://cors-anywhere.herokuapp.com/';
-        const url = 'https://ussouthcentral.services.azureml.net/workspaces/882b498ba2484c78a9268c55682faf6b/services/009a999d5edb41c08081e2e99f4c0cb0/execute?api-version=2.0&format=swagger';
-        const api_key = '5SYTc0qQO21061zLANMre2o4LZVw8MLJ80CUS8Xexvv1wikCdEbHMFQn+MELUP24+kUzoLKfOp5QAHnHOdzpYw==';
+        const url = 'Insert Azure ML Studio URL';
+        const api_key = 'Insert API key';
         const data = JSON.stringify({
             Inputs: {
                 input1: [...deleted_status_quotes]
